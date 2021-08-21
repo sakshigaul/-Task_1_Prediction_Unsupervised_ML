@@ -1,0 +1,58 @@
+# Importing all libraries required in this notebook
+import pandas as pd
+import numpy as np  
+import matplotlib.pyplot as plt 
+
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_absolute_error
+%matplotlib inline
+
+# Reading data from remote link
+url = "http://bit.ly/w-data"
+df = pd.read_csv(url)
+df.describe()
+
+df.plot(x='Hours', y='Scores', style='o')
+plt.title("Relation of score to the hours of study")
+plt.xlabel("Hours")
+plt.ylabel("Score")
+plt.show()
+
+X = df.iloc[:, :-1].values  
+Y = df.iloc[:, 1].values  
+
+x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=0) 
+plt.scatter(x_train, y_train, label='Training', color ='b')
+plt.scatter(x_test, y_test, label='Testing', color ='r')
+plt.title("Testing-Training Visualision")
+plt.legend()
+plt.show()
+
+LR = LinearRegression()
+LR.fit(x_train, y_train)
+
+prediction = LR.predict(x_test)
+
+plt.scatter(x_test, y_test, label='Test Data', color ='r')
+plt.plot(x_test, prediction, label='Linear Regression', color ='b')
+plt.title("Actual and Predicted")
+plt.ylabel("Scores")
+plt.xlabel("Hours")
+plt.legend()
+plt.show()
+
+compare_df= pd.DataFrame({"Actual": y_test, "Predicted": prediction})
+print(compare_df)
+print()
+LR.score(X, Y)
+
+print('Mean Absolute Error:', mean_absolute_error(y_test, prediction)) 
+
+# You can also test with your own data
+hours = 9.25
+pred_hour_temp = np.array([hours])
+pred_hour_temp = pred_hour_temp.reshape(1,1)
+pred_hour_final = LR.predict(pred_hour_temp)
+print("No of Hours = {}".format(hours))
+print("Predicted Score = {}".format(pred_hour_final[0]))
